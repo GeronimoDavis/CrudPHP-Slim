@@ -1,0 +1,5 @@
+# Dependencias de PHP 
+/vendor/
+
+# Configuración sensible
+.env
