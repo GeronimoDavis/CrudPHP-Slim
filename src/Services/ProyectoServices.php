@@ -20,16 +20,20 @@ class ProyectoServices {
         try{
             $sql = "SELECT * FROM proyectos";
             $stmt = $this->conn->prepare($sql);
-        
+            $stmt->execute();
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
             $proyectos = [];
-            while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-                $proyectos = new Proyecto($row['id'], $row['nombre'], $row['descripcion'], $row['usuario_id']);
+            foreach($rows as $row){
+                $proyectos[] = new Proyecto($row['id'], $row['nombre'], $row['descripcion'], $row['usuario_id']);
                 
             }
+           
             return $proyectos;
         }catch(PDOException $e){
-            return [];
+            
             throw new Exception("Error al obtener los proyectos: " . $e->getMessage());
+            
         }
     }
     

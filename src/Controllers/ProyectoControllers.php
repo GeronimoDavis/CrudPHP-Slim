@@ -5,7 +5,7 @@
     use App\Entities\Proyecto;
     use Exception;
 
-    class ProyectoController{
+    class ProyectoControllers{
 
         private $PServices;//hace referencia a la instancia del poyectoServices
 
