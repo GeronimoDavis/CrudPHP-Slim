@@ -10,13 +10,12 @@ use Exception;
 class ProyectoServices {
 
     private $conn;
-
     public function __construct(){
         $db = new DB();
         $this->conn = $db->connect();
     }
 
-    function getAll(): array{
+    public function getAll(): array{
         try{
             $sql = "SELECT * FROM proyectos";
             $stmt = $this->conn->prepare($sql);
@@ -34,6 +33,27 @@ class ProyectoServices {
             
             throw new Exception("Error al obtener los proyectos: " . $e->getMessage());
             
+        }
+    }
+
+    public function create(Proyecto $proyecto){
+        try{
+            $sql = "INSERT INTO proyectos(nombre, descripcion, usuario_id) VALUES (:nombre, :descripcion, :usuario_id)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(":nombre", $proyecto->getNombre());
+        $stmt->bindValue(":descripcion", $proyecto->getDescripcion());
+        $stmt->bindValue(":usuario_id", $proyecto->getUsuarioId());
+        $stmt->execute();
+
+        // Seteamos el ID directamente en el objeto recibido
+        $id = (int)$this->conn->lastInsertId();
+        $proyecto->setId($id);
+
+        
+        return $proyecto;
+
+        }catch(PDOException $e){
+            throw new Exception("Error al crear el proyectos: " . $e->getMessage());
         }
     }
     

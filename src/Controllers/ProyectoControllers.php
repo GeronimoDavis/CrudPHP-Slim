@@ -1,6 +1,8 @@
 <?php 
     namespace App\Controllers;
 
+    use Psr\Http\Message\ServerRequestInterface as Request;
+    use Psr\Http\Message\ResponseInterface as Response;
     use App\Services\ProyectoServices;
     use App\Entities\Proyecto;
     use Exception;
@@ -14,7 +16,7 @@
             $this->PServices = new ProyectoServices();
         }
 
-        public function getAllProyectos($request, $response){
+        public function getAllProyectos(Request $request, Response $response){
             try{
                 $proyectosEntities = $this->PServices->getAll();
         
@@ -30,6 +32,25 @@
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(500); // 500 Internal Server Error
             }
         }
+
+        public function createProyecto(Request $request, Response $response): Response{
+            try{
+                $datos = $request->getParsedBody();   
+                $proyecto = new Proyecto(null, $datos['nombre'] ?? '', $datos['descripcion'] ?? null, 1);
+
+                $createdProduct = $this->PServices->create($proyecto);
+                    
+                $response->getBody()->write(json_encode(['product' => $createdProduct->toArray()]));
+                return $response->withHeader('Content-type', 'application/json')->withStatus(201);
+
+            }catch(Exception $e){
+                $errorResponse = ['error' => 'Error al crear el proyectos: ' . $e->getMessage()];
+                $response->getBody()->write(json_encode($errorResponse));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+            }
+        
+        }   
+
 
 }
 

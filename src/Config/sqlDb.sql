@@ -21,4 +21,4 @@ CREATE TABLE tareas (
     descripcion VARCHAR(255) NOT NULL,
     estado ENUM('pendiente', 'completada') DEFAULT 'pendiente',
     proyecto_id INT,
-    FOREIGN KEY (proyecto_id) REFERENCES proyectos(id) ON DELETE CASCADE
+    FOREIGN KEY (proyecto_id) REFERENCES proyectos(id) ON DELETE CASCADE)
