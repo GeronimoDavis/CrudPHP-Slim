@@ -58,6 +58,19 @@ class ProyectoServices {
     }
     
 
+    public function delete($id){
+        try{
+            $sql = "DELETE FROM proyectos WHERE id = :id";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(":id", $id);
+            $stmt->execute();
+
+        }catch(PDOException $e){
+            
+            throw new Exception("Error al borrar el proyectos: " . $e->getMessage());
+        }
+    }
+
 
 }
 ?>

@@ -51,7 +51,18 @@
         
         }   
 
+        public function deleteProyecto(Request $request, Response $response, $args): Response{
+            try{
+                $id = $args['id'];
+                $this->PServices->delete($id);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
 
+            }catch(Exception $e){
+                $errorResponse = ['error' => 'Error al borrar el proyectos: ' . $e->getMessage()];
+                $response->getBody()->write(json_encode($errorResponse));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+            }
+        }
 }
 
 

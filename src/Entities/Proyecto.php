@@ -7,7 +7,7 @@ class Proyecto {
     private ?string $descripcion;
     private ?int $usuario_id;
 
-    public function __construct(?int $id = null, string $nombre = "", ?string $descripcion = null, ?int $usuario_id = null) {
+    public function __construct(?int $id, string $nombre = "", ?string $descripcion = null, ?int $usuario_id = null) {
         $this->id = $id;
         $this->nombre = $nombre;
         $this->descripcion = $descripcion;
