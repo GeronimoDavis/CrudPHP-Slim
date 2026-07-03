@@ -3,7 +3,6 @@ namespace App\Services;
 
 use App\Entities\Usuario;
 use App\Config\DB;
-use PDO;
 use PDOException;
 use Exception;
 

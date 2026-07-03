@@ -10,7 +10,10 @@ $app->addRoutingMiddleware();// analiza la ruta de la solicitud y la asigna al c
 $app->addErrorMiddleware(true, true, true);// Middleware para manejar errores y excepciones de manera más amigable (true, true, true) muestra detalles de los errores en la respuesta
 
 // Requerimos e invocamos el archivo de rutas pasándole la variable a $app
-$registerProyectoRoutes = require __DIR__ . '/../src/Routes/proyectoRoutes.php';
+$registerProyectoRoutes = require __DIR__ . '/../src/Routes/ProyectoRoutes.php';
 $registerProyectoRoutes($app);
+
+$registerUsuarioRoutes = require __DIR__ . '/../src/Routes/UsuarioRoutes.php';
+$registerUsuarioRoutes($app);
 
 $app->run();
