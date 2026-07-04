@@ -18,13 +18,15 @@
 
         public function getAllProyectos(Request $request, Response $response){
             try{
-                $proyectosEntities = $this->PServices->getAll();
-        
-                // Convertimos el array de Objetos Entidad a arrays simples para el json_encode
-                $proyectosArray = array_map(fn($p) => $p->toArray(), $proyectosEntities);
+                $proyectos = $this->PServices->getAll();
 
-                $response->getBody()->write(json_encode($proyectosArray));
-                return $response->withHeader('Content-Type', 'application/json')->withStatus(200); // 200 OK
+                // 2. Guardamos la vista en el búfer de PHP para Slim
+                ob_start();
+                require __DIR__ . '/../../views/verProyectos.php';
+                $html = ob_get_clean();// guardamos el contenido de la vista en una variable sin mostrar la vista todavía
+
+                $response->getBody()->write($html);
+                return $response->withHeader('Content-Type', 'text/html')->withStatus(200);//con 'text/html' le decimos al navegador que lo que le estamos enviando es una vista html y no un json
     
             }catch(Exception $e){
                 $errorResponse = ['error' => 'Error al obtener los proyectos: ' . $e->getMessage()];
@@ -41,7 +43,7 @@
                 $createdProduct = $this->PServices->create($proyecto);
                     
                 $response->getBody()->write(json_encode(['product' => $createdProduct->toArray()]));
-                return $response->withHeader('Content-type', 'application/json')->withStatus(201);
+                return $response->withHeader('Location', '/proyectos/show')->withStatus(302);
 
             }catch(Exception $e){
                 $errorResponse = ['error' => 'Error al crear el proyectos: ' . $e->getMessage()];
