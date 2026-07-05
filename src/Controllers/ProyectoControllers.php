@@ -53,6 +53,7 @@
         
         }   
 
+
         public function deleteProyecto(Request $request, Response $response, $args): Response{
             try{
                 $id = $args['id'];

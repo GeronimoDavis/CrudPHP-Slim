@@ -56,6 +56,21 @@ class ProyectoServices {
             throw new Exception("Error al crear el proyectos: " . $e->getMessage());
         }
     }
+
+    public function update($id, Proyecto $proyecto){
+        try{
+            
+            $sql = "UPDATE proyectos SET nombre = :nombre, descripcion = :descripcion WHERE id = :id";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindValue(":nombre", $proyecto->getNombre());
+            $stmt->bindValue(":descripcion", $proyecto->getDescripcion());
+            $stmt->bindValue(":usuario_id", $proyecto->getUsuarioId());
+            // Aquí deberías bindear los demás parámetros según lo que quieras actualizar
+            $stmt->execute();
+        }catch(PDOException $e){
+            throw new Exception("Error al actualizar el proyectos: " . $e->getMessage());
+        }
+    }
     
 
     public function delete($id){
