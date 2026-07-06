@@ -53,6 +53,25 @@
         
         }   
 
+        public function updateProyecto(Request $request, Response $response, $args): Response{
+            try{
+                $id = $args['id'];
+                $datos = $request->getParsedBody();
+                if(!isset($datos['nombre']) || empty(trim($datos['nombre']))){
+                    throw new Exception("El nombre del proyecto es obligatorio.");
+                }
+                $proyecto = new Proyecto($id, $datos['nombre'], $datos['descripcion'] ?? "", 1);
+
+                $this->PServices->update($proyecto);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+
+            }catch(Exception $e){
+                $errorResponse = ['error' => 'Error al actualizar el proyectos: ' . $e->getMessage()];
+                $response->getBody()->write(json_encode($errorResponse));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+            }
+        }
+
 
         public function deleteProyecto(Request $request, Response $response, $args): Response{
             try{

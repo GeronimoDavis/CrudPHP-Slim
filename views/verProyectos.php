@@ -12,12 +12,17 @@
 </head>
 <body>
 
-    <h2>Crear Nuevo Proyecto</h2>
-    <form action="/proyectos/create" method="POST">
-        <input type="text" name="nombre" placeholder="Nombre del proyecto" required>
-        <textarea name="descripcion" placeholder="Descripción"></textarea>
-        <button type="submit">Guardar Proyecto</button>
-    </form>
+   <?php if (!isset($args['id'])){
+        echo "<h2>Actualizar Proyecto</h2>";
+   }else{
+        echo "<h2>Crear Proyecto</h2>";
+   } ?>
+        <form action="/proyectos/create" method="POST">
+            <input type="text" name="nombre" placeholder="Nombre del proyecto" required>
+            <textarea name="descripcion" placeholder="Descripción"></textarea>
+            <button type="submit">Guardar Proyecto</button>
+        </form>
+    
 
     <h2>Mis Proyectos</h2>
     
@@ -33,6 +38,9 @@
                     <input type="hidden" name="_METHOD" value="DELETE"> <!-- Esto es para simular un DELETE request; Slim busca el campo `_METHOD` en mayúsculas -->
                     <button type="submit">Eliminar</button>
                 </form>
+                <a href="/proyectos/show/<?php echo $proy->getId(); ?>">
+                    <button>actualizar</button>
+                </a>
             </div>
         <?php endforeach; ?>
     <?php endif; ?>

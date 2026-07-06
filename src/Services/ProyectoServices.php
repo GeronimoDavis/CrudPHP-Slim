@@ -57,7 +57,7 @@ class ProyectoServices {
         }
     }
 
-    public function update($id, Proyecto $proyecto){
+    public function update(Proyecto $proyecto){
         try{
             
             $sql = "UPDATE proyectos SET nombre = :nombre, descripcion = :descripcion WHERE id = :id";
@@ -65,7 +65,7 @@ class ProyectoServices {
             $stmt->bindValue(":nombre", $proyecto->getNombre());
             $stmt->bindValue(":descripcion", $proyecto->getDescripcion());
             $stmt->bindValue(":usuario_id", $proyecto->getUsuarioId());
-            // Aquí deberías bindear los demás parámetros según lo que quieras actualizar
+            $stmt->bindValue(":id", $proyecto->getId());
             $stmt->execute();
         }catch(PDOException $e){
             throw new Exception("Error al actualizar el proyectos: " . $e->getMessage());
