@@ -64,11 +64,28 @@ class ProyectoServices {
             $stmt = $this->conn->prepare($sql);
             $stmt->bindValue(":nombre", $proyecto->getNombre());
             $stmt->bindValue(":descripcion", $proyecto->getDescripcion());
-            $stmt->bindValue(":usuario_id", $proyecto->getUsuarioId());
             $stmt->bindValue(":id", $proyecto->getId());
             $stmt->execute();
         }catch(PDOException $e){
             throw new Exception("Error al actualizar el proyectos: " . $e->getMessage());
+        }
+    }
+
+    public function getById($id): ?Proyecto{
+        try{
+            $sql = "SELECT * FROM proyectos WHERE id = :id";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(":id", $id);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if(!$row){
+                return null; // No se encontró el proyecto
+            }
+
+            return new Proyecto($row['id'], $row['nombre'], $row['descripcion'], $row['usuario_id']);
+        }catch(PDOException $e){
+            throw new Exception("Error al obtener el proyecto: " . $e->getMessage());
         }
     }
     

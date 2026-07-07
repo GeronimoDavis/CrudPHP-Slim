@@ -16,10 +16,15 @@
             $this->PServices = new ProyectoServices();
         }
 
-        public function getAllProyectos(Request $request, Response $response){
+        public function getAllProyectos(Request $request, Response $response, array $args = []): Response{
             try{
                 $proyectos = $this->PServices->getAll();
+                $id = $args['id'] ?? ($request->getQueryParams()['id'] ?? null);// Si no se proporciona un ID, será null
 
+                if(!empty($id)){//si existe una id, obtenemos el proyecto con ese id
+                    $proyecto = $this->PServices->getById($id);
+                   
+                }
                 // 2. Guardamos la vista en el búfer de PHP para Slim
                 ob_start();
                 require __DIR__ . '/../../views/verProyectos.php';
@@ -34,6 +39,8 @@
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(500); // 500 Internal Server Error
             }
         }
+
+    
 
         public function createProyecto(Request $request, Response $response): Response{
             try{
@@ -63,7 +70,7 @@
                 $proyecto = new Proyecto($id, $datos['nombre'], $datos['descripcion'] ?? "", 1);
 
                 $this->PServices->update($proyecto);
-                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                return $response->withHeader('Location', '/proyectos/show')->withStatus(302);
 
             }catch(Exception $e){
                 $errorResponse = ['error' => 'Error al actualizar el proyectos: ' . $e->getMessage()];

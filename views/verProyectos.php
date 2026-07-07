@@ -11,17 +11,34 @@
     </style>
 </head>
 <body>
+    <?php $id = $id ?? null; ?>
 
-   <?php if (!isset($args['id'])){
-        echo "<h2>Actualizar Proyecto</h2>";
-   }else{
-        echo "<h2>Crear Proyecto</h2>";
-   } ?>
-        <form action="/proyectos/create" method="POST">
+    <?php if (!empty($id)): ?>
+        <h2>Actualizar Proyecto</h2>
+    <?php else: ?>
+        <h2>Crear Proyecto</h2>
+    <?php endif; ?>
+
+    <form action="<?php echo !empty($id) ? '/proyectos/update/' . urlencode($id) : '/proyectos/create'; ?>" method="POST">
+        <?php if (!empty($proyecto)): ?>
+            <input type="text" name="nombre" placeholder="Nombre del proyecto" value="<?php echo htmlspecialchars($proyecto->getNombre()); ?>" required>
+            <textarea name="descripcion" placeholder="Descripción"><?php echo htmlspecialchars($proyecto->getDescripcion() ?? ''); ?></textarea>
+        <?php else: ?>
             <input type="text" name="nombre" placeholder="Nombre del proyecto" required>
             <textarea name="descripcion" placeholder="Descripción"></textarea>
+        <?php endif; ?>
+
+        <?php if (!empty($id)): ?>
+            <input type="hidden" name="id" value="<?php echo htmlspecialchars($id, ENT_QUOTES, 'UTF-8'); ?>">
+            <input type="hidden" name="action" value="update">
+            <button type="submit">Actualizar Proyecto</button>
+            <a href="/proyectos/show"><button type="button">Cancelar</button></a>
+        <?php else: ?>
+            <input type="hidden" name="action" value="create">
             <button type="submit">Guardar Proyecto</button>
-        </form>
+        <?php endif; ?>
+    </form>
+    
     
 
     <h2>Mis Proyectos</h2>
@@ -38,8 +55,8 @@
                     <input type="hidden" name="_METHOD" value="DELETE"> <!-- Esto es para simular un DELETE request; Slim busca el campo `_METHOD` en mayúsculas -->
                     <button type="submit">Eliminar</button>
                 </form>
-                <a href="/proyectos/show/<?php echo $proy->getId(); ?>">
-                    <button>actualizar</button>
+                <a href="/proyectos/show/<?php echo $proy->getId(); ?>" >
+                    <button>Actualizar</button>
                 </a>
             </div>
         <?php endforeach; ?>
