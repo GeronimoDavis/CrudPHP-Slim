@@ -5,6 +5,7 @@ use App\Controllers\UsuarioControllers;
 
 return function ($app) {
     $app->group('/usuarios', function (RouteCollectorProxy $group) {
-        $group->get('/show', UsuarioControllers::class . ':getAllUsuarios'); 
+        $group->get('/register', UsuarioControllers::class . ':showRegisterForm');
+        $group->post('/register', UsuarioControllers::class . ':registerUsuario'); 
     });
 };

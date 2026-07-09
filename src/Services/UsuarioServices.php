@@ -15,24 +15,34 @@ class UsuarioServices {
         $this->conn = $db->connect();
     }
     
-    public function getAll(): array{
-        try{
-            $sql = "SELECT * FROM usuarios";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->execute();
-            $rows = $stmt->fetchAll();
 
-            $usuarios = [];
-            foreach($rows as $row){
-                $usuarios[] = new Usuario($row['id'], $row['nombre'], $row['email'], $row['password']);
-                
+    public function register(Usuario $usuario){
+        try{
+            // Verificar que el email sea único
+            $sqlCheck = "SELECT COUNT(*) as count FROM usuarios WHERE email = :email";
+            $stmtCheck = $this->conn->prepare($sqlCheck);
+            $stmtCheck->bindValue(":email", $usuario->getEmail());
+            $stmtCheck->execute();
+            $result = $stmtCheck->fetch(\PDO::FETCH_ASSOC);
+            
+            if($result['count'] > 0){
+                throw new Exception("El email ya está registrado");
             }
-           
-            return $usuarios;
+
+            $sql = "INSERT INTO usuarios(nombre, email, password) VALUES (:nombre, :email, :password)";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindValue(":nombre", $usuario->getNombre());
+            $stmt->bindValue(":email", $usuario->getEmail());
+            $stmt->bindValue(":password", $usuario->getPassword());
+            $stmt->execute();
+
+            $id = (int)$this->conn->lastInsertId();
+            $usuario->setId($id);
+
+            return $usuario;
+
         }catch(PDOException $e){
-            
-            throw new Exception("Error al obtener los usuarios: " . $e->getMessage());
-            
+            throw new Exception("Error al registrar usuario: " . $e->getMessage());
         }
     }
 
