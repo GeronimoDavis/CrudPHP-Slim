@@ -6,6 +6,7 @@
     use App\Services\UsuarioServices;
     use App\Entities\Usuario;
     use Exception;
+    use session_start();
 
     class UsuarioControllers{
 
@@ -17,10 +18,11 @@
         }
 
        
-        public function showRegisterForm(Request $request, Response $response){
+        public function showForm(Request $request, Response $response, array $args = []){
             try{
+                $action = $args['action'] ?? ($request->getQueryParams()['action'] ?? null);// Si no se proporciona una acción, será null
                 ob_start();
-                require __DIR__ . '/../../views/registro.php';
+                require __DIR__ . '/../../views/registroLogin.php';
                 $html = ob_get_clean();
 
                 $response->getBody()->write($html);
@@ -73,6 +75,48 @@
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(500); 
             }
         }
+
+        
+
+        public function loginUsuario(Request $request, Response $response){
+            try{
+                session_start(); // Iniciamos la sesión para poder almacenar información del usuario logueado
+                $data = $request->getParsedBody();
+                
+                if(empty($data['email']) || empty($data['password'])){
+                    $errorResponse = ['error' => 'Email y contraseña son requeridos'];
+                    $response->getBody()->write(json_encode($errorResponse));
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+                }
+
+                $usuario = $this->UServices->login($data['email'], $data['password']);
+                
+                // Guardamos la información del usuario en la sesión
+                $usuario->toArray(); 
+                $id = $usuario->getId();
+                $nombre = $usuario->getNombre();
+
+                $_SESSION['usuario'] = [
+                    'id' => $id,
+                    'nombre' => $nombre
+                ];
+                     
+                // Convertimos el objeto Entidad a array simple para el json_encode (sin mostrar la contraseña)
+                $usuarioArray = $usuario->toArray();
+                unset($usuarioArray['password']); // No devolvemos la contraseña
+        
+               
+                
+
+                $response->getBody()->write(json_encode(['success' => true, 'message' => 'Login exitoso', 'usuario' => $usuarioArray]));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(200); 
+            }catch(Exception $e){
+                $errorResponse = ['error' => 'Error al logearse: ' . $e->getMessage()];
+                $response->getBody()->write(json_encode($errorResponse));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(500); 
+            }
+        }
+        
 
         
 

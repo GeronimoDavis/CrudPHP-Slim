@@ -23,7 +23,7 @@ class UsuarioServices {
             $stmtCheck = $this->conn->prepare($sqlCheck);
             $stmtCheck->bindValue(":email", $usuario->getEmail());
             $stmtCheck->execute();
-            $result = $stmtCheck->fetch(\PDO::FETCH_ASSOC);
+            $result = $stmtCheck->fetch();
             
             if($result['count'] > 0){
                 throw new Exception("El email ya está registrado");
@@ -43,6 +43,29 @@ class UsuarioServices {
 
         }catch(PDOException $e){
             throw new Exception("Error al registrar usuario: " . $e->getMessage());
+        }
+    }
+
+    public function login($email, $password){
+        try{
+            $sql = "SELECT * FROM usuarios WHERE email = :email";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(":email", $email);
+            $stmt->execute();
+            $user = $stmt->fetch();
+
+            if(!$user){
+                throw new Exception("El usuario no existe");
+            }
+
+            if(password_verify($password, $user['password'])){
+                return new Usuario($user['id'], $user['nombre'], $user['email'], $user['password']);
+            }else{
+                throw new Exception("Credenciales inválidas");
+            }
+
+        }catch(PDOException $e){
+            throw new Exception("Error al logearse: " . $e->getMessage());
         }
     }
 
