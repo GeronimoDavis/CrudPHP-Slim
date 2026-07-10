@@ -15,10 +15,11 @@ class ProyectoServices {
         $this->conn = $db->connect();
     }
 
-    public function getAll(): array{
+    public function getAllbyId($usuarioId): array{
         try{
-            $sql = "SELECT * FROM proyectos";
+            $sql = "SELECT * FROM proyectos WHERE usuario_id = :usuario_id";
             $stmt = $this->conn->prepare($sql);
+            $stmt->bindValue(":usuario_id", $usuarioId);
             $stmt->execute();
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

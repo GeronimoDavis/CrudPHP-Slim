@@ -6,7 +6,6 @@
     use App\Services\UsuarioServices;
     use App\Entities\Usuario;
     use Exception;
-    use session_start();
 
     class UsuarioControllers{
 
@@ -67,8 +66,7 @@
                 $usuarioArray = $usuarioCreado->toArray();
                 unset($usuarioArray['password']); // No devolvemos la contraseña
         
-                $response->getBody()->write(json_encode(['success' => true, 'message' => 'Usuario registrado exitosamente', 'usuario' => $usuarioArray]));
-                return $response->withHeader('Content-Type', 'application/json')->withStatus(201); 
+                return $response->withHeader('Location', '/usuarios/showForm/login')->withStatus(303);
             }catch(Exception $e){
                 $errorResponse = ['error' => 'Error al registrar usuario: ' . $e->getMessage()];
                 $response->getBody()->write(json_encode($errorResponse));
@@ -109,11 +107,26 @@
                 
 
                 $response->getBody()->write(json_encode(['success' => true, 'message' => 'Login exitoso', 'usuario' => $usuarioArray]));
-                return $response->withHeader('Content-Type', 'application/json')->withStatus(200); 
+                return $response->withHeader('Location', '/proyectos/show')->withStatus(303);
             }catch(Exception $e){
                 $errorResponse = ['error' => 'Error al logearse: ' . $e->getMessage()];
                 $response->getBody()->write(json_encode($errorResponse));
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(500); 
+            }
+        }
+
+        public function logoutUsuario(Request $request, Response $response){
+            try{
+                if (session_status() !== PHP_SESSION_ACTIVE) {
+                    session_start();
+                }
+                $_SESSION = [];
+                session_destroy();
+                return $response->withHeader('Location', '/usuarios/showForm/login')->withStatus(302);
+            }catch(Exception $e){
+                $errorResponse = ['error' => 'Error al cerrar sesión: ' . $e->getMessage()];
+                $response->getBody()->write(json_encode($errorResponse));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
             }
         }
         

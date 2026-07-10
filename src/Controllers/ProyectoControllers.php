@@ -16,9 +16,19 @@
             $this->PServices = new ProyectoServices();
         }
 
-        public function getAllProyectos(Request $request, Response $response, array $args = []): Response{
+        public function getAllProyectosbyId(Request $request, Response $response, array $args = []): Response{
             try{
-                $proyectos = $this->PServices->getAll();
+                if (session_status() !== PHP_SESSION_ACTIVE) {
+                    session_start();
+                }
+
+                
+                $usuarioId = $_SESSION['usuario']['id'] ?? null;
+                if (empty($usuarioId)) {
+                    return $response->withHeader('Location', '/usuarios/showForm/login')->withStatus(302);
+                }
+
+                $proyectos = $this->PServices->getAllbyId($usuarioId);
                 $id = $args['id'] ?? ($request->getQueryParams()['id'] ?? null);// Si no se proporciona un ID, será null
 
                 if(!empty($id)){//si existe una id, obtenemos el proyecto con ese id
@@ -45,7 +55,7 @@
         public function createProyecto(Request $request, Response $response): Response{
             try{
                 $datos = $request->getParsedBody();   
-                $proyecto = new Proyecto(null, $datos['nombre'] ?? '', $datos['descripcion'] ?? null, 1);
+                $proyecto = new Proyecto(null, $datos['nombre'] ?? '', $datos['descripcion'] ?? null, $datos['usuario_id'] ?? null);//el ultimo es el id del usuario tomado de la session
 
                 $createdProduct = $this->PServices->create($proyecto);
                     
@@ -67,7 +77,7 @@
                 if(!isset($datos['nombre']) || empty(trim($datos['nombre']))){
                     throw new Exception("El nombre del proyecto es obligatorio.");
                 }
-                $proyecto = new Proyecto($id, $datos['nombre'], $datos['descripcion'] ?? "", 1);
+                $proyecto = new Proyecto($id, $datos['nombre'], $datos['descripcion'] ?? "");
 
                 $this->PServices->update($proyecto);
                 return $response->withHeader('Location', '/proyectos/show')->withStatus(302);
@@ -84,7 +94,7 @@
             try{
                 $id = $args['id'];
                 $this->PServices->delete($id);
-                return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+                return $response->withHeader('Location', '/proyectos/show')->withStatus(302);
 
             }catch(Exception $e){
                 $errorResponse = ['error' => 'Error al borrar el proyectos: ' . $e->getMessage()];
