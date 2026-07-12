@@ -18,4 +18,7 @@ $registerProyectoRoutes($app);
 $registerUsuarioRoutes = require __DIR__ . '/../src/Routes/UsuarioRoutes.php';
 $registerUsuarioRoutes($app);
 
+$registerTareaRoutes = require __DIR__ . '/../src/Routes/TareaRoutes.php';
+$registerTareaRoutes($app);
+
 $app->run();
