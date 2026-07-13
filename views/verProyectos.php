@@ -89,6 +89,9 @@
                             <td><?php echo htmlspecialchars($proy->getNombre()); ?></td>
                             <td class="description-cell"><?php echo htmlspecialchars($proy->getDescripcion() ?? 'Sin descripción'); ?></td>
                             <td class="actions">
+                                <a href="/tareas/show/<?php echo $proy->getId(); ?>">
+                                    <button type="button">Ver tareas</button>
+                                </a>
                                 <form action="/proyectos/delete/<?php echo $proy->getId(); ?>" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este proyecto?');">
                                     <input type="hidden" name="_METHOD" value="DELETE"> <!-- Esto es para simular un DELETE request; Slim busca el campo `_METHOD` en mayúsculas -->
                                     <button type="submit">Eliminar</button>
