@@ -20,6 +20,8 @@ if (empty($usuarioId)) {
         .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
         .top-bar a { text-decoration: none; }
         .card { background: #f8f9fa; padding: 16px; border-radius: 8px; margin-bottom: 18px; border: 1px solid #e0e0e0; }
+        form { background: #f4f4f4; padding: 16px; margin-bottom: 18px; border-radius: 8px; }
+        input, select { display: block; width: 100%; margin-bottom: 10px; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
         .task-table-wrapper { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
@@ -51,6 +53,19 @@ if (empty($usuarioId)) {
         <?php endif; ?>
     </div>
 
+    <h3>Crear tarea</h3>
+    <form action="/tareas/create" method="POST">
+        <input type="text" name="descripcion" placeholder="Descripción de la tarea" required>
+        <select name="estado">
+            <option value="pendiente">Pendiente</option>
+            <option value="completada">Completada</option>
+        </select>
+        <?php if (!empty($proyecto)): ?>
+            <input type="hidden" name="proyecto_id" value="<?php echo htmlspecialchars($proyecto->getId(), ENT_QUOTES, 'UTF-8'); ?>">
+        <?php endif; ?>
+        <button type="submit">Guardar tarea</button>
+    </form>
+
     <?php if (empty($tareas)): ?>
         <div class="card empty">No hay tareas registradas para este proyecto todavía.</div>
     <?php else: ?>
@@ -60,6 +75,7 @@ if (empty($usuarioId)) {
                     <tr>
                         <th>Descripción</th>
                         <th>Estado</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>

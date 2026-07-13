@@ -45,6 +45,35 @@ class TareaController{
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500); 
         }
     }
+
+    public function createTarea(Request $request, Response $response, array $args = []){
+        try{
+            if (session_status() !== PHP_SESSION_ACTIVE) {
+                session_start();
+            }
+
+            $data = $request->getParsedBody();
+
+            $descripcion = $data['descripcion'] ?? null;
+            $estado = $data['estado'] ?? null;
+            $proyectoId = $data['proyecto_id'] ?? null;
+
+            if(!$descripcion || !$estado || !$proyectoId){
+                throw new Exception("Faltan datos para crear la tarea.");
+            }
+
+            $tarea = new Tarea(null, $descripcion, $estado, $proyectoId);
+            $this->TServices->create($tarea);
+
+            return $response->withHeader('Location', '/tareas/show/' . urlencode($proyectoId))->withStatus(302);
+        }catch(Exception $e){
+            $errorResponse = ['error' => 'Error al crear la tarea: ' . $e->getMessage()];
+            $response->getBody()->write(json_encode($errorResponse));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500); 
+        }
+    }
+
+    
 }
 
 
