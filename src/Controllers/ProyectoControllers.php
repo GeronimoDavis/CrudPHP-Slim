@@ -18,11 +18,6 @@
 
         public function getAllProyectosbyId(Request $request, Response $response, array $args = []): Response{
             try{
-                if (session_status() !== PHP_SESSION_ACTIVE) {
-                    session_start();
-                }
-
-                
                 $usuarioId = $_SESSION['usuario']['id'] ?? null;
                 if (empty($usuarioId)) {
                     return $response->withHeader('Location', '/usuarios/showForm/login')->withStatus(302);

@@ -8,6 +8,11 @@ if (empty($usuarioId)) {
     header("Location: /usuarios/showForm/login");
     exit;
 }
+
+$proyectoId = $proyectoId ?? null;
+if (empty($proyectoId) && !empty($proyecto)) {
+    $proyectoId = $proyecto->getId();
+}
 ?>
 
 <!DOCTYPE html>
@@ -35,6 +40,7 @@ if (empty($usuarioId)) {
     </style>
 </head>
 <body>
+    
     <div class="top-bar">
         <h2 style="margin: 0;">Tareas del proyecto</h2>
         <a href="/proyectos/show">
@@ -60,8 +66,8 @@ if (empty($usuarioId)) {
             <option value="pendiente">Pendiente</option>
             <option value="completada">Completada</option>
         </select>
-        <?php if (!empty($proyecto)): ?>
-            <input type="hidden" name="proyecto_id" value="<?php echo htmlspecialchars($proyecto->getId(), ENT_QUOTES, 'UTF-8'); ?>">
+        <?php if (!empty($proyectoId)): ?>
+            <input type="hidden" name="proyecto_id" value="<?php echo htmlspecialchars($proyectoId, ENT_QUOTES, 'UTF-8'); ?>">
         <?php endif; ?>
         <button type="submit">Guardar tarea</button>
     </form>
@@ -86,6 +92,11 @@ if (empty($usuarioId)) {
                                 <span class="status <?php echo htmlspecialchars($tarea->getEstado()); ?>">
                                     <?php echo htmlspecialchars(ucfirst($tarea->getEstado())); ?>
                                 </span>
+                            </td>
+                            <td>
+                                <form action="/tareas/delete/<?php echo urlencode($proyectoId); ?>/<?php echo urlencode($tarea->getId()); ?>" method="POST" style="display:inline;" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta tarea?');">
+                                    <button type="submit">Eliminar</button>
+                                </form>
                             </td>
                         </tr>
                     <?php endforeach; ?>

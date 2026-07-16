@@ -33,6 +33,7 @@
 </head>
 <body>
     <?php $id = $id ?? null; ?>
+    <!-- Aseguramos que $id esté definido para evitar errores de variable indefinida -->
 
     <div style="display:flex; justify-content: flex-end; margin-bottom: 16px;">
         <a href="/usuarios/logout" style="text-decoration:none;">

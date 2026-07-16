@@ -44,9 +44,9 @@ class TareaServices {
         try{
             $sql = "INSERT INTO tareas (descripcion, estado, proyecto_id) VALUES (:descripcion, :estado, :proyecto_id)";
             $stmt = $this->conn->prepare($sql);
-            $stmt->bindParam(":descripcion", $tarea->getDescripcion());
-            $stmt->bindParam(":estado", $tarea->getEstado());
-            $stmt->bindParam(":proyecto_id", $tarea->getProyectoId());
+            $stmt->bindValue(":descripcion", $tarea->getDescripcion());
+            $stmt->bindValue(":estado", $tarea->getEstado());
+            $stmt->bindValue(":proyecto_id", $tarea->getProyectoId());
             $stmt->execute();
 
             $id = $this->conn->lastInsertId();
@@ -56,6 +56,7 @@ class TareaServices {
             throw new Exception("Error al crear la tarea: " . $e->getMessage());
         }
     }
+
 
     public function delete($tareaId){
         try{

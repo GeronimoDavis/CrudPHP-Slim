@@ -21,10 +21,6 @@ class TareaController{
 
     public function getAllbyIdProyecto(Request $request, Response $response, array $args = []){
         try{
-            if (session_status() !== PHP_SESSION_ACTIVE) {
-                session_start();
-            }
-
             $proyectoId = $args['proyecto_id'] ?? null;
             if(!$proyectoId){
                 return $response->withHeader('Location', '/proyectos/show')->withStatus(302);
@@ -48,10 +44,6 @@ class TareaController{
 
     public function createTarea(Request $request, Response $response, array $args = []){
         try{
-            if (session_status() !== PHP_SESSION_ACTIVE) {
-                session_start();
-            }
-
             $data = $request->getParsedBody();
 
             $descripcion = $data['descripcion'] ?? null;
@@ -68,6 +60,25 @@ class TareaController{
             return $response->withHeader('Location', '/tareas/show/' . urlencode($proyectoId))->withStatus(302);
         }catch(Exception $e){
             $errorResponse = ['error' => 'Error al crear la tarea: ' . $e->getMessage()];
+            $response->getBody()->write(json_encode($errorResponse));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500); 
+        }
+    }
+
+    public function deleteTarea(Request $request, Response $response, array $args = []){
+        try{
+            $proyectoId = $args['proyecto_id'] ?? null;
+            $tareaId = $args['tarea_id'] ?? null;
+
+            if(!$proyectoId || !$tareaId){
+                throw new Exception("Faltan datos para eliminar la tarea.");
+            }
+
+            $this->TServices->delete($tareaId);
+
+            return $response->withHeader('Location', '/tareas/show/' . urlencode($proyectoId))->withStatus(302);
+        }catch(Exception $e){
+            $errorResponse = ['error' => 'Error al eliminar la tarea: ' . $e->getMessage()];
             $response->getBody()->write(json_encode($errorResponse));
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500); 
         }

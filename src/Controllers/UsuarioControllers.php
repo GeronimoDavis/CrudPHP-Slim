@@ -78,7 +78,6 @@
 
         public function loginUsuario(Request $request, Response $response){
             try{
-                session_start(); // Iniciamos la sesión para poder almacenar información del usuario logueado
                 $data = $request->getParsedBody();
                 
                 if(empty($data['email']) || empty($data['password'])){
