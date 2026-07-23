@@ -84,6 +84,34 @@ class TareaController{
         }
     }
 
+    public function updateTarea(Request $request, Response $response, array $args = []){
+        try{
+            $data = $request->getParsedBody();
+            $tareaId = $args['tarea_id'] ?? null;
+            $proyectoId = $data['proyecto_id'] ?? null;
+
+            if(!$tareaId || !$proyectoId){
+                throw new Exception("Faltan datos para actualizar la tarea.");
+            }
+
+            $descripcion = $data['descripcion'] ?? null;
+            $estado = $data['estado'] ?? null;
+
+            if(!$descripcion || !$estado){
+                throw new Exception("Faltan campos para actualizar la tarea.");
+            }
+
+            $tarea = new Tarea($tareaId, $descripcion, $estado, $proyectoId);
+            $this->TServices->update($tarea);
+
+            return $response->withHeader('Location', '/tareas/show/' . urlencode($proyectoId))->withStatus(302);
+        }catch(Exception $e){
+            $errorResponse = ['error' => 'Error al actualizar la tarea: ' . $e->getMessage()];
+            $response->getBody()->write(json_encode($errorResponse));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500); 
+        }
+    }
+
     
 }
 

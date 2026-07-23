@@ -35,8 +35,17 @@ if (empty($proyectoId) && !empty($proyecto)) {
         .pendiente { background: #fff3cd; color: #856404; }
         .completada { background: #d4edda; color: #155724; }
         .empty { color: #777; padding: 16px; }
-        button { border: none; border-radius: 4px; background: #007bff; color: #fff; cursor: pointer; padding: 8px 12px; }
+        button { border: none; border-radius: 4px; background: #007bff; color: #fff; cursor: pointer; padding: 4px 8px; font-size: 0.75rem; margin: 0; vertical-align: middle; }
         button:hover { opacity: 0.95; }
+        .actions-cell { display: flex; gap: 4px; align-items: center; }
+        .actions-cell form { display: inline; margin: 0; padding: 0; }
+        .btn-edit { background: #28a745; }
+        .btn-delete { background: #dc3545; }
+        .modal { display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.4); }
+        .modal-content { background-color: #f4f4f4; margin: 100px auto; padding: 20px; border-radius: 8px; width: 90%; max-width: 500px; }
+        .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close:hover { color: #000; }
+        .modal-form { background: white; padding: 20px; border-radius: 8px; }
     </style>
 </head>
 <body>
@@ -94,9 +103,12 @@ if (empty($proyectoId) && !empty($proyecto)) {
                                 </span>
                             </td>
                             <td>
-                                <form action="/tareas/delete/<?php echo urlencode($proyectoId); ?>/<?php echo urlencode($tarea->getId()); ?>" method="POST" style="display:inline;" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta tarea?');">
-                                    <button type="submit">Eliminar</button>
-                                </form>
+                                <div class="actions-cell">
+                                    <button type="button" class="btn-edit" onclick="openModal(<?php echo $tarea->getId(); ?>, '<?php echo htmlspecialchars($tarea->getDescripcion(), ENT_QUOTES); ?>', '<?php echo htmlspecialchars($tarea->getEstado(), ENT_QUOTES); ?>')">Editar</button>
+                                    <form action="/tareas/delete/<?php echo urlencode($proyectoId); ?>/<?php echo urlencode($tarea->getId()); ?>" method="POST" style="display:inline;" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta tarea?');">
+                                        <button type="submit" class="btn-delete">Eliminar</button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -104,5 +116,45 @@ if (empty($proyectoId) && !empty($proyecto)) {
             </table>
         </div>
     <?php endif; ?>
+
+    <!-- Modal para editar tarea -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3>Editar Tarea</h3>
+            <form id="editForm" method="POST">
+                <input type="text" id="editDescripcion" name="descripcion" placeholder="Descripción de la tarea" required>
+                <select id="editEstado" name="estado">
+                    <option value="pendiente">Pendiente</option>
+                    <option value="completada">Completada</option>
+                </select>
+                <input type="hidden" id="editProyectoId" name="proyecto_id">
+                <button type="submit">Guardar cambios</button>
+                <button type="button" onclick="closeModal()" style="background: #6c757d;">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal(tareaId, descripcion, estado) {
+            const proyectoId = document.getElementById('editProyectoId').value || '<?php echo htmlspecialchars($proyectoId, ENT_QUOTES); ?>';
+            document.getElementById('editDescripcion').value = descripcion;
+            document.getElementById('editEstado').value = estado;
+            document.getElementById('editProyectoId').value = proyectoId;
+            document.getElementById('editForm').action = '/tareas/update/' + tareaId;
+            document.getElementById('editModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('editModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 </html>

@@ -9,5 +9,6 @@ return function ($app) {
         $group->post('/create', TareaController::class . ':createTarea');
         $group->post('/delete/{proyecto_id}/{tarea_id}', TareaController::class . ':deleteTarea');
         $group->delete('/delete/{proyecto_id}/{tarea_id}', TareaController::class . ':deleteTarea');
+        $group->post('/update/{tarea_id}', TareaController::class . ':updateTarea');
     });
 };

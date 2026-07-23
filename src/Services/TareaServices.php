@@ -69,4 +69,36 @@ class TareaServices {
             throw new Exception("Error al eliminar la tarea: " . $e->getMessage());
         }
     }
+
+    public function getById($tareaId): Tarea{
+        try{
+            $sql = "SELECT * FROM tareas WHERE id = :id";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(":id", $tareaId);
+            $stmt->execute();
+            $row = $stmt->fetch();
+
+            if(!$row){
+                throw new Exception("Tarea no encontrada");
+            }
+
+            return new Tarea($row['id'], $row['descripcion'], $row['estado'], $row['proyecto_id']);
+        }catch(PDOException $e){
+            throw new Exception("Error al obtener la tarea: " . $e->getMessage());
+        }
+    }
+
+    public function update(Tarea $tarea){
+        try{
+            $sql = "UPDATE tareas SET descripcion = :descripcion, estado = :estado WHERE id = :id";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindValue(":descripcion", $tarea->getDescripcion());
+            $stmt->bindValue(":estado", $tarea->getEstado());
+            $stmt->bindValue(":id", $tarea->getId());
+            $stmt->execute();
+
+        }catch(PDOException $e){
+            throw new Exception("Error al actualizar la tarea: " . $e->getMessage());
+        }
+    }
 }
